@@ -10,7 +10,7 @@ javac -cp ./bin -d ./bin --module-path %PATH_TO_FX% --add-modules javafx.control
 java -cp ./bin --module-path %PATH_TO_FX% --add-modules javafx.controls Main
 ```
 
-## This can execute command above
+This can execute command below
 1. input expression
 2. print expression
 3. variable=expression
