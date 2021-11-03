@@ -34,7 +34,6 @@ public class Interpreter {
     public Interpreter(){
 
         String filter1 = "[^\\+\\-\\*\\/\\%\\^\\w]";
-        String filter2 = "[^\\+\\-\\*\\/\\^\\.\\%0-9]";
         patternMapper.put("^print +.+", s -> {
             s = s.replaceFirst("print +", "");
             s = makeStringCalculatable(s);
