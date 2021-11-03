@@ -14,16 +14,30 @@ public class Interpreter {
     private String[] lines;
     private String userInput = "";
 
+    private String replaceVariable(String s){
+        for(String name : variables.keySet()){
+            s = s.replaceAll("(?<=^|\\W)" + name + "(?=$|\\W)", variables.get(name).toString());
+        }
+        return s;
+    }
+
+    private String makeStringCalculatable(String s){
+        String filter = "[^\\+\\-\\*\\/\\^\\.\\%0-9]";
+        for(String name : variables.keySet()){
+            s = s.replaceAll("(?<=^|\\W)" + name + "(?=$|\\W)", variables.get(name).toString());
+        }
+        return s.replaceAll(filter, "");
+    }
+
+
+
     public Interpreter(){
 
         String filter1 = "[^\\+\\-\\*\\/\\%\\^\\w]";
         String filter2 = "[^\\+\\-\\*\\/\\^\\.\\%0-9]";
         patternMapper.put("^print +.+", s -> {
             s = s.replaceFirst("print +", "");
-            for(String name : variables.keySet()){
-                s = s.replaceAll("(?<=^|\\W)" + name + "(?=$|\\W)", variables.get(name).toString());
-            }
-            s = s.replaceAll(filter2, "");
+            s = makeStringCalculatable(s);
             //System.out.println(Calculator.calculate(s));
             console.appendLine(Calculator.calculate(s).toString());
             return 0;
@@ -36,25 +50,15 @@ public class Interpreter {
                 return 1;
             }
 
-            for(String name : variables.keySet()){
-                userInput = userInput.replaceAll("(?<=^|\\W)" + name + "(?=$|\\W)", variables.get(name).toString());
-            }
-
-            userInput = userInput.replaceAll(filter2, "");
-            //Scanner input = new Scanner(System.in);
-            //String in = input.nextLine();
-            //variables.put(s, Calculator.calculate(in));
+            userInput = makeStringCalculatable(userInput);
             variables.put(s, Calculator.calculate(userInput));
             userInput = "";
             return 0;
         });
-        patternMapper.put("\\w+=.+", s ->{
+        patternMapper.put("\\w+.*=.+", s ->{
             String variable = s.split("=")[0].replaceAll("\\W", "");
             s = s.split("=")[1];
-            for(String name : variables.keySet()){
-                s = s.replaceAll("(?<=^|\\W)" + name + "(?=$|\\W)", variables.get(name).toString());
-            }
-            s = s.replaceAll(filter2, "");
+            s = makeStringCalculatable(s);
             variables.put(variable, Calculator.calculate(s));
             return 0;
         });
