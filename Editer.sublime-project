@@ -19,6 +19,19 @@
 			]
 		},
 		{
+			"name":"compile all",
+			"shell":true,
+			"cmd":[
+				"javac", 
+				"-cp", "${project_path}/bin", 
+				"-d", "${project_path}/bin", 
+				"--module-path", "%PATH_TO_FX%", 
+				"--add-modules", "javafx.controls",
+				"*.java", "ui/*.java","interpreter/*.java"
+			],
+			"working_dir":"${project_path}/src"
+		},
+		{
 			"name":"run",
 			"shell":true,
 			"cmd":[
