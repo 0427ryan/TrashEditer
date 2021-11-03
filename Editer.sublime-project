@@ -1,0 +1,40 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+	"build_systems":[
+		{
+			"name":"build",
+			"shell":true,
+			"cmd":[
+				"javac", 
+				"-cp", "${project_path}/bin", 
+				"-d", "${project_path}/bin", 
+				"--module-path", "%PATH_TO_FX%", 
+				"--add-modules", "javafx.controls",
+				"$file"
+			]
+		},
+		{
+			"name":"run",
+			"shell":true,
+			"cmd":[
+				"start", "cmd", "/c",
+				"java -cp ${project_path}/bin --module-path %PATH_TO_FX% --add-modules javafx.controls Main & pause"
+			],
+			"working_dir":"$project_path"
+		},
+		{
+			"name":"run2",
+			"shell":true,
+			"cmd":[
+				"start", "cmd", "/c",
+				"java -cp ${project_path}/bin --module-path %PATH_TO_FX% --add-modules javafx.controls $file_base_name & pause"
+			],
+			"working_dir":"$project_path"
+		},
+	]
+}
