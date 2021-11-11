@@ -27,7 +27,7 @@
 				"-d", "${project_path}/bin", 
 				"--module-path", "%PATH_TO_FX%", 
 				"--add-modules", "javafx.controls",
-				"*.java", "ui/*.java","interpreter/*.java"
+				"*.java", "ui/*.java","interpreter/*.java", "controller/*.java"
 			],
 			"working_dir":"${project_path}/src"
 		},

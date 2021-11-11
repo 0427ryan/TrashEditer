@@ -1,16 +1,16 @@
 package interpreter;
 
 import java.util.TreeMap;
-import ui.Console;
-import java.util.Scanner;
 import java.util.NoSuchElementException;
+
+import javafx.scene.control.TextArea;
 
 public class Interpreter {
     
     private TreeMap<String, Executer> patternMapper = new TreeMap<>();
     private TreeMap<String, Number> variables = new TreeMap<>();
-    private Console console;
     private int lineNumber = 0;
+    private TextArea output;
     private String[] lines;
     private String userInput = "";
 
@@ -29,6 +29,9 @@ public class Interpreter {
         return s.replaceAll(filter, "");
     }
 
+    public Boolean isFinish(){
+        return lineNumber >= lines.length;
+    }
 
 
     public Interpreter(){
@@ -37,15 +40,13 @@ public class Interpreter {
         patternMapper.put("^print +.+", s -> {
             s = s.replaceFirst("print +", "");
             s = makeStringCalculatable(s);
-            //System.out.println(Calculator.calculate(s));
-            console.appendLine(Calculator.calculate(s).toString());
+            output.setText(output.getText() + Calculator.calculate(s) + '\n');
             return 0;
         });
         patternMapper.put("^input +.+", s ->{
             s = s.replaceFirst("input +", "");
             s = s.replaceAll(filter1, "");
             if(this.userInput.equals("")){
-                console.appendLine("Please enter " + s);
                 return 1;
             }
 
@@ -63,34 +64,37 @@ public class Interpreter {
         });
     }
 
-    public Interpreter(Console console, String lines){
+    public Interpreter(TextArea output, String lines){
         this();
+        this.output = output;
         this.lines = lines.split("\n");
-        this.console = console;
     }
     
-    public int execute(){
+    public void execute(){
         try{
-        while(lineNumber < lines.length){
-            String line = lines[lineNumber];
-            System.out.println(line);
-            for(String s : patternMapper.keySet()){
-                if(line.matches(s)){
-                    int ret = patternMapper.get(s).execute(line);
-                    if(ret == 1){
-                        return 1;
-                    }
-                    break;
-                }
+            if(output.getText().equals("")){
+                output.setText("Start\n");
             }
-            lineNumber++;
-        }
+            while(lineNumber < lines.length){
+                String line = lines[lineNumber];
+                System.out.println(line);
+                for(String s : patternMapper.keySet()){
+                    if(line.matches(s)){
+                        int ret = patternMapper.get(s).execute(line);
+                        if(ret == 1){
+                            return;
+                        }
+                        break;
+                    }
+                }
+                lineNumber++;
+            }
 
-    }catch (NoSuchElementException e ){
-        e.printStackTrace();
-    }
-        console.appendLine("End");
-        return 0;
+        }catch (NoSuchElementException e ){
+            e.printStackTrace();
+        }
+        output.setText(output.getText() + "End");
+        return;
     }
     public void setUserInput(String input){
         this.userInput = input;
