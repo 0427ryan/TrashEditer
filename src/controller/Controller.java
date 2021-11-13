@@ -16,13 +16,15 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import java.util.TreeMap;
+import java.util.WeakHashMap;
 
 public class Controller {
     
-    private TreeMap<String, File> tabToFile = new TreeMap<>();
+    private WeakHashMap<String, File> tabToFile = new WeakHashMap<>();
 
     private  Interpreter interpreter;
+
+    private File lastFolder;
 
     public Controller(View view, Stage stage){
         view.getRunButton().setOnAction( e ->{
@@ -57,11 +59,14 @@ public class Controller {
         open.setOnAction(e ->{
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open File");
+            if(lastFolder != null)
+                fileChooser.setInitialDirectory(lastFolder);
             fileChooser.getExtensionFilters().addAll(
             new ExtensionFilter("Cs Files", "*.cs"),
             new ExtensionFilter("All Files", "*.*"));
             File file = fileChooser.showOpenDialog(stage);
             if(file != null){
+                setLastFolder(file);
                 try(BufferedReader reader = new BufferedReader(new FileReader(file))){
                     StringBuilder builder = new StringBuilder();
                     while(reader.ready()){
@@ -97,15 +102,21 @@ public class Controller {
         view.getMenuBar().getMenus().add(menu);
     }
 
+    public void setLastFolder(File file){
+        this.lastFolder = new File(file.getParent());
+    }
+
     public void saveas(View view, Stage stage){
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open File");
+        fileChooser.setTitle("Save File As");
+        fileChooser.setInitialFileName(view.getEditingTab().getText());
+        fileChooser.setInitialDirectory(lastFolder);
         fileChooser.getExtensionFilters().addAll(
         new ExtensionFilter("Cs Files", "*.cs"),
         new ExtensionFilter("All Files", "*.*"));
         File file = fileChooser.showSaveDialog(stage);
         if(file != null){
-            //file.create();
+            setLastFolder(file);
             try(FileWriter writer = new FileWriter(file)){
                 writer.append(view.getCurrentContent());
                 this.tabToFile.put(view.getEditingTab().getText(), file);
